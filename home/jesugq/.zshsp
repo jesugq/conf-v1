@@ -1,20 +1,8 @@
 #!/usr/bin/env bash
 
-# spq
-QUEEN_DIR=~/Development
-function spq() {
-  tmux-rename-create spq
-  cd $QUEEN_DIR
-}
-
 # spd
 DOCKER_DIR=~/Development/docker-dev
-function spd() {
-  tmux-rename-create spd
-	cd $DOCKER_DIR
-}
 function spdapp() {
-  tmux-rename-create spd
   cd $DOCKER_DIR
   git pull
   sp apps:sync
@@ -22,96 +10,68 @@ function spdapp() {
   sp start
 }
 function spdrld() {
-  tmux-rename-create spd
   cd $DOCKER_DIR
   git pull
   sp apps:sync
 }
 function spdaws() {
-  tmux-rename-create spd
-	cd $DOCKER_DIR
+  cd $DOCKER_DIR
   aws sso login --profile staging
 }
 function spdssh() {
-  tmux-rename-create spd
-	cd $DOCKER_DIR
-	ssh-add ~/.ssh/id_ed25519
+  cd $DOCKER_DIR
+  ssh-add ~/.ssh/id_ed25519
 }
 
 # spb
-BACKEND_DIR=~/Development/simplepractice
 BACKEND_APP=simplepractice
-function spb() {
-  tmux-rename-create spb
-	cd $BACKEND_DIR
-}
 function spbdb() {
-  tmux-rename-create spb
-	sp exec mysql -h mysql.local -u root $BACKEND_APP
+  sp exec mysql -h mysql.local -u root $BACKEND_APP
 }
 function spbspec() {
-  tmux-rename-create spb
-	if [ $1 = true ]; then
-		shift
-		docker exec -it -e COVERAGE=true $BACKEND_APP bundle exec rspec "$@"
-	else
-		shift
-		docker exec -it $BACKEND_APP bundle exec rspec "$@"
-	fi
+  if [ $1 = true ]; then
+    shift
+    docker exec -it -e COVERAGE=true $BACKEND_APP bundle exec rspec "$@"
+  else
+    shift
+    docker exec -it $BACKEND_APP bundle exec rspec "$@"
+  fi
 }
 function spboas() {
-  tmux-rename-create spb
-	sp exec -a $BACKEND_APP rails 'oas:generate[spec/acceptance/frontend/users_spec.rb,spec/acceptance/frontend/team_members_spec.rb]'
+  sp exec -a $BACKEND_APP rails 'oas:generate[spec/acceptance/frontend/users_spec.rb,spec/acceptance/frontend/team_members_spec.rb]'
 }
 
 # spf
-FRONTEND_DIR=~/Development/simplepractice/frontend
 FRONTEND_APP=simplepractice-frontend
-function spf() {
-  tmux-rename-create spf
-	cd $FRONTEND_DIR
-}
 function spfyarn() {
-  tmux-rename-create spf
-	if [ $1 = true ]; then
-		shift
-    sp exec -a $FRONTEND_APP -e COVERAGE=true yarn test:browser "$@"
-		# docker exec -it -e COVERAGE=true $FRONTEND_APP yarn test --serve -f 'dummy test'
-	else
-		shift
-    sp exec -a $FRONTEND_APP yarn test:browser "$@"
-		# docker exec -it $FRONTEND_APP yarn test --serve -f 'dummy test'
-	fi
+  if [ $1 = true ]; then
+    shift
+    docker exec -it -e COVERAGE=true $FRONTEND_APP yarn test:browser "$@"
+  else
+    shift
+    docker exec -it $FRONTEND_APP yarn test:browser "$@"
+  fi
 }
 function spflint() {
-  tmux-rename-create spf
   local type="$1"
   shift
   sp exec -a $FRONTEND_APP yarn lint:"$type" "$@"
 }
 
 # sps
-SSO_DIR=~/Development/sp-sso-account
 SSO_APP=sp-sso-account
-function sps() {
-  tmux-rename-create sps
-  cd $SSO_DIR
-}
 function spsdb() {
-  tmux-rename-create sps
-	sp exec mysql -h mysql.local -u root $SSO_APP
+  sp exec mysql -h mysql.local -u root $SSO_APP
 }
 function spsrcop() {
-  tmux-rename-create sps
-	sp rubocop -a $SSO_APP "$@"
+  sp rubocop -a $SSO_APP "$@"
 }
 function spsspec() {
-  tmux-rename-create sps
-	if [ $1 = true ]; then
-		shift
-		docker exec -it -e COVERAGE=true $SSO_APP bundle exec rspec "$@"
-	else
-		shift
-		docker exec -it $SSO_APP bundle exec rspec "$@"
-	fi
+  if [ $1 = true ]; then
+    shift
+    docker exec -it -e COVERAGE=true $SSO_APP bundle exec rspec "$@"
+  else
+    shift
+    docker exec -it $SSO_APP bundle exec rspec "$@"
+  fi
 }
